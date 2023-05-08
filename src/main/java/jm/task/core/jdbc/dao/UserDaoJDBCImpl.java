@@ -12,11 +12,13 @@ import jm.task.core.jdbc.model.User;
 import jm.task.core.jdbc.util.Util;
 
 public class UserDaoJDBCImpl implements UserDao {
-    private final Connection conn = Util.getConnection();
+    private final Connection conn;
 
     public UserDaoJDBCImpl() {
+        conn = Util.getConnection();
     }
 
+    @Override
     public void createUsersTable() {
         String sql = "CREATE TABLE IF NOT EXISTS users " +
                 "(id BIGINT PRIMARY KEY AUTO_INCREMENT, name VARCHAR(255), last_name VARCHAR(255), age INT)";
@@ -29,6 +31,7 @@ public class UserDaoJDBCImpl implements UserDao {
         }
     }
 
+    @Override
     public void dropUsersTable() {
         String sql = "DROP TABLE IF EXISTS users";
 
@@ -40,6 +43,7 @@ public class UserDaoJDBCImpl implements UserDao {
         }
     }
 
+    @Override
     public void saveUser(String name, String lastName, byte age) {
         String sql = "INSERT INTO users (name, last_name, age) VALUES (?, ?, ?)";
 
@@ -49,12 +53,12 @@ public class UserDaoJDBCImpl implements UserDao {
             statement.setByte(3, age);
 
             statement.executeUpdate();
-            System.out.println("Пользователь с именем " + name + " добавлен в базу данных");
         } catch (SQLException e) {
             System.out.println("Ошибка при добавлении пользователя: " + e.getMessage());
         }
     }
 
+    @Override
     public void removeUserById(long id) {
         String sql = "DELETE FROM users WHERE id=?";
 
@@ -68,6 +72,7 @@ public class UserDaoJDBCImpl implements UserDao {
         }
     }
 
+    @Override
     public List<User> getAllUsers() {
         List<User> users = new ArrayList<>();
         String sql = "SELECT * FROM users";
@@ -89,8 +94,7 @@ public class UserDaoJDBCImpl implements UserDao {
         return users;
     }
 
-
-    // Очистка содержания таблицы
+    @Override
     public void cleanUsersTable() {
         String sql = "TRUNCATE TABLE users";
         try (Statement statement = conn.createStatement()) {
